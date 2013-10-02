@@ -19,8 +19,14 @@
 					var scope = this;
 					
 					this.options = $.extend({
-						
+						onResize:	this.onResize
 					},options);
+					
+					this.screens = {};	// Will contain the screens
+					
+					this.build();
+					
+					this.display("settings");
 					
 				} catch (err) {
 					this.error(err);
@@ -28,10 +34,94 @@
 			};
 			
 			
-			pluginClass.prototype.createCell = function () {
+			pluginClass.prototype.build = function () {
 				try {
 					
+					this.element.addClass("nano");
 					
+					this.container			= $.create("div", this.element);
+					this.container.addClass("content");
+					
+					this.screens.settings 	= $.create("div", this.container);
+					this.screens.app 		= $.create("div", this.container);
+					
+					
+					var survey = [{
+						twitter: {
+							type:			"varchar",
+							placeholder:	"Twitter ID",
+							label:			"Twitter ID",
+							required:		true,
+							value:			"",
+							attr:	{
+								"data-group": "1"
+							}
+						}
+					},{
+						count: {
+							type:			"list",
+							label:			"Display",
+							placeholder:	"Select one",
+							required:		true,
+							list: 			[
+								{label:"5 tweets",		value:5},
+								{label:"10 tweets",		value:10},
+								{label:"15 tweets",		value:15},
+								{label:"20 tweets",		value:20}
+							],
+							value:			10,
+							attr:	{
+								"data-group": "1"
+							}
+						}
+					}];
+					
+					this.screens.settings.jsurvey({
+						survey:		survey,
+						submit:		$(".btn_submit"),
+						next:		$(".btn_next"),
+						previous:	$(".btn_previous"),
+						block:		true,
+						group:		true,
+						onSubmit:	function(data) {
+							
+						}
+					});
+					
+					
+					this.element.nanoScroller();
+					
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			
+			pluginClass.prototype.display = function (scr) {
+				try {
+					
+					var i;
+					for (i in this.screens) {
+						if (i == scr) {
+							this.screens[i].show();
+						} else {
+							this.screens[i].hide();
+						}
+					}
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			
+			pluginClass.prototype.onResize = function () {
+				try {
+					
+					console.log("widget was resized!");
+					
+					this.container.nanoScroller();
 					
 				} catch (err) {
 					this.error(err);

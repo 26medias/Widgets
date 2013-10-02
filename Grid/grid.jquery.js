@@ -30,6 +30,9 @@
 						widgets:	{}
 					},options);
 					
+					// Widget list
+					this.widgets = [];
+					
 					this.timer = false;
 					
 					// Global vars without poluting the scope
@@ -78,10 +81,29 @@
 					var scope = this;
 					
 					this.helper		= {
-						shadow:	$.create("div", this.element)	
+						shadow:	$.create("div", this.element),
+						admin:	$.create("div", this.element)
 					}
 					
 					this.helper.shadow.addClass("widget-helper").addClass("shadow");
+					this.helper.admin.addClass("widget-helper").addClass("admin");
+					this.helper.admin.hover(function(){}, function() {
+						scope.helper.admin.removeClass("visible");
+					});
+					
+					// create the buttons on the admin layer
+					var btn_edit = $.create("div", this.helper.admin);
+						btn_edit.addClass("button").addClass("green");
+						btn_edit.html("Edit");
+						btn_edit.click(function() {
+							alert("edit "+scope.current_widget.type);
+						});
+					var btn_delete = $.create("div", this.helper.admin);
+						btn_delete.addClass("button").addClass("red");
+						btn_delete.html("Delete");
+						btn_delete.click(function() {
+							scope.removeWidget(scope.current_widget.uuid);
+						});
 					
 				} catch (err) {
 					this.error(err);
@@ -106,9 +128,12 @@
 								drag: 		function(event, ui) {
 									scope.displayShadow(scope.options.widgets[widget], ui.offset);		// Display the shadow (preview of the location, snap to grid)
 								},
-								stop: 		function() {
+								stop: 		function(event, ui) {
 									// hide the shadow helper
 									scope.helper.shadow.removeClass("visible");
+									
+									// Create the widget
+									scope.CreateWidget(widget, scope.toGrid(ui.offset));
 								}
 							});
 						}
@@ -126,7 +151,7 @@
 					
 					// Here we're going to snap to the grid
 					// get the [0;0] position of the element
-					var origin 	= this.element.offset();
+					/*var origin 	= this.element.offset();
 					
 					var fixedX	= offset.left-origin.left+(this.props.cell.pxwidth/2);
 					var fixedY	= offset.top-origin.top+(this.props.cell.pxheight/2);
@@ -135,7 +160,9 @@
 					var pos =  {
 						x:		Math.max(0,Math.floor(fixedX/(this.props.cell.pxwidth+this.props.margin.pxwidth))),
 						y:		Math.max(0,Math.floor(fixedY/(this.props.cell.pxheight+this.props.margin.pxheight)))
-					}
+					}*/
+					var pos = this.toGrid(offset);
+					
 					var pospx	= this.fromGrid(pos);
 					
 					// debug
@@ -151,6 +178,25 @@
 						height:	(this.props.cell.pxheight*widget.height.start)+((widget.height.start-1)*this.props.margin.pxheight)
 					},pospx));
 					
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			pluginClass.prototype.toGrid = function (offset) {
+				try {
+					
+					var origin 	= this.element.offset();
+					
+					var fixedX	= offset.left-origin.left+(this.props.cell.pxwidth/2);
+					var fixedY	= offset.top-origin.top+(this.props.cell.pxheight/2);
+					
+					// Pos is in cells, not pixels!
+					return {
+						x:		Math.max(0,Math.floor(fixedX/(this.props.cell.pxwidth+this.props.margin.pxwidth))),
+						y:		Math.max(0,Math.floor(fixedY/(this.props.cell.pxheight+this.props.margin.pxheight)))
+					}
 					
 				} catch (err) {
 					this.error(err);
@@ -176,6 +222,8 @@
 					
 					var x;
 					var y;
+					var i;
+					var j;
 					var l;
 					
 					
@@ -237,6 +285,12 @@
 					}
 					
 					
+					// Now we're going to resize the widgets
+					for (i=0;i<this.widgets.length;i++) {
+						this.resizeWidget(this.widgets[i]);
+					}
+					
+					
 				} catch (err) {
 					this.error(err);
 				}
@@ -290,6 +344,121 @@
 					this.error(err);
 				}
 			};
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			pluginClass.prototype.CreateWidget = function (widgetType, coordinates /* grid, not px */) {
+				try {
+					
+					var scope = this;
+					
+					var widget = {
+						pos:		coordinates,
+						type:		widgetType,
+						container:	$.create("div", this.element),
+						uuid:		uuid.v4()
+					};
+					widget.container["widget_"+widgetType]();
+					
+					var pospx	= this.fromGrid(coordinates);
+					
+					widget.container.css($.extend(pospx, {
+						width:	(this.props.cell.pxwidth*this.options.widgets[widgetType].width.start)+((this.options.widgets[widgetType].width.start-1)*this.props.margin.pxwidth),
+						height:	(this.props.cell.pxheight*this.options.widgets[widgetType].height.start)+((this.options.widgets[widgetType].height.start-1)*this.props.margin.pxheight)
+					}));
+					
+					widget.container.addClass("widget-container");
+					widget.container.addClass("widget-type-"+widgetType);
+					
+					this.widgets.push(widget);
+					
+					widget.container.hover(function() {
+						scope.current_widget = widget;
+						scope.helper.admin.addClass("visible");
+						var offset = $(this).offset();
+						scope.helper.admin.css($.extend(offset, {
+							width:		$(this).outerWidth(),
+							height:		$(this).outerHeight()
+						}));
+					},function() {
+						
+					});
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			
+			pluginClass.prototype.resizeWidget = function (widget) {
+				try {
+					
+					var pospx	= this.fromGrid(widget.pos);
+					
+					widget.container.css($.extend(pospx, {
+						width:	(this.props.cell.pxwidth*this.options.widgets[widget.type].width.start)+((this.options.widgets[widget.type].width.start-1)*this.props.margin.pxwidth),
+						height:	(this.props.cell.pxheight*this.options.widgets[widget.type].height.start)+((this.options.widgets[widget.type].height.start-1)*this.props.margin.pxheight)
+					}));
+					
+					// Tell the widget we just resized it
+					widget.container["widget_"+widget.type]("onResize",{});
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			
+			pluginClass.prototype.removeWidget = function (uuid) {
+				try {
+					
+					var scope = this;
+					
+					var i;
+					
+					for (i=0;i<this.widgets.length;i++) {
+						if (this.widgets[i].uuid == uuid) {
+							this.widgets[i].container.remove();
+							this.widgets.splice(i,1);
+							scope.helper.admin.removeClass("visible");
+							return true;
+						}
+					}
+					
+					return false;
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			
+			
+			
+			
+			
 			
 			
 			pluginClass.prototype.__init = function (element) {
