@@ -1,0 +1,13 @@
+.grid-container {
+	position:		relative;
+	overflow:		hidden;
+	
+	.grid_marker	{
+		position:				absolute;
+		width:					7px;
+		height:					7px;
+		background-repeat:		no-repeat;
+		background-position:	center center;
+		background-image:		url("images/grid.png");
+	}
+}

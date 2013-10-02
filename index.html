@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<title>Grid test</title>
+	<meta charset="UTF-8">
+	
+	<!-- Dependencies -->
+	<link href="css/example.css" rel="stylesheet/less" type="text/css" /> <!-- this is a less file, not a css file! -->
+	<script src="js/jquery-1.10.2.min.js" type="text/javascript"></script>
+	<script src="js/jlib.js" type="text/javascript"></script>
+	<script src="js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
+	<link href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet/less" type="text/css" />
+	
+	<!-- The actual code -->
+	<link href="Grid/grid.css" rel="stylesheet/less" type="text/css" /> <!-- this is a less file, not a css file! -->
+	<script src="Grid/grid.jquery.js" type="text/javascript"></script>
+	
+	<!-- lesscss must be included after the less file is loaded -->
+	<script src="js/less-1.4.1.min.js" type="text/javascript"></script>
+	
+</head>
+<body>
+	<div class="container">
+		<div class="grid-container"></div>
+	</div>
+	<div class="widgets">
+		<div class="button green small active">Show grid</div>
+		<hr />
+		<div class="widget-list">
+			<div class="item">Twitter</div>
+			<div class="item blue">text</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		$(function() {
+			$(".grid-container").grid({
+				cols:	20,		// Number of columns
+				ratio:	1,		// Cell ratio: 1 = square
+				margin:	1,		// in %,
+				widgets:	{
+					twitter:	{
+						width:	{
+							start:		4,
+							min:		3,
+							max:		6
+						},
+						height:	{
+							start:		2,
+							min:		2,
+							max:		8
+						}
+					}
+				}
+			});
+		});
+	</script>
+</body>
+</html>
