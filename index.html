@@ -15,6 +15,10 @@
 	<link href="Grid/grid.css" rel="stylesheet/less" type="text/css" /> <!-- this is a less file, not a css file! -->
 	<script src="Grid/grid.jquery.js" type="text/javascript"></script>
 	
+	<!-- The widgets -->
+	<link href="widgets/twitter/widget.css" rel="stylesheet/less" type="text/css" />
+	<script src="widgets/twitter/widget.js" type="text/javascript"></script>
+	
 	<!-- lesscss must be included after the less file is loaded -->
 	<script src="js/less-1.4.1.min.js" type="text/javascript"></script>
 	
@@ -24,10 +28,39 @@
 		<div class="grid-container"></div>
 	</div>
 	<div class="widgets">
+		<table class="debug">
+			<tbody>
+				<tr>
+					<td>X</td>
+					<td data-debug="posx"></td>
+				</tr>
+				<tr>
+					<td>Y</td>
+					<td data-debug="posy"></td>
+				</tr>
+				<tr>
+					<td>Col X</td>
+					<td data-debug="colx"></td>
+				</tr>
+				<tr>
+					<td>Col Y</td>
+					<td data-debug="coly"></td>
+				</tr>
+				<tr>
+					<td>Snap X</td>
+					<td data-debug="snapx"></td>
+				</tr>
+				<tr>
+					<td>Snap Y</td>
+					<td data-debug="snapy"></td>
+				</tr>
+			</tbody>
+		</table>
+		<hr />
 		<div class="button green small active">Show grid</div>
 		<hr />
 		<div class="widget-list">
-			<div class="item">Twitter</div>
+			<div class="item" data-widget-drop="twitter">Twitter</div>
 			<div class="item blue">text</div>
 		</div>
 	</div>

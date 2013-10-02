@@ -11,3 +11,17 @@
 		background-image:		url("images/grid.png");
 	}
 }
+
+.widget-helper {
+	position:		absolute;
+	display:		none;
+	width:			150px;
+	height:			50px;
+	
+	&.shadow {
+		background-color:	#EAC14D;
+	}
+	&.visible {
+		display:			block;
+	}
+}

@@ -1,6 +1,6 @@
 /**
-	mobileViewport
-	@version:		1.2.0
+	Grid
+	@version:		1.0.0
 	@author:		Julien Loutre <julien.loutre@gmail.com>
 */
 (function($){
@@ -26,7 +26,8 @@
 						marker:	{
 							width:		7,
 							height:		7
-						}
+						},
+						widgets:	{}
 					},options);
 					
 					this.timer = false;
@@ -46,9 +47,124 @@
 					});
 					
 					
+					// Create the helpers
+					this.createHelpers();
+					
 					// Resize on init
 					this.resize();
 					
+					// Now we monitor the drag actions on the widgets
+					this.monitorDrag();
+					
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			pluginClass.prototype.debug = function (label, value) {
+				try {
+					
+					$('[data-debug="'+label+'"]').html(value);
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			pluginClass.prototype.createHelpers = function () {
+				try {
+					
+					var scope = this;
+					
+					this.helper		= {
+						shadow:	$.create("div", this.element)	
+					}
+					
+					this.helper.shadow.addClass("widget-helper").addClass("shadow");
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			pluginClass.prototype.monitorDrag = function () {
+				try {
+					
+					var scope = this;
+					
+					var buttons = $('[data-widget-drop]');
+					buttons.each(function(idx, el) {
+						var widget = $(el).attr("data-widget-drop");
+						if (scope.options.widgets[widget]) {
+							$(el).draggable({
+								opacity: 	0.5,
+								helper: 	"clone",
+								start: 		function() {
+									
+								},
+								drag: 		function(event, ui) {
+									scope.displayShadow(scope.options.widgets[widget], ui.offset);		// Display the shadow (preview of the location, snap to grid)
+								},
+								stop: 		function() {
+									// hide the shadow helper
+									scope.helper.shadow.removeClass("visible");
+								}
+							});
+						}
+					});
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			pluginClass.prototype.displayShadow = function (widget, offset) {
+				try {
+					
+					var scope = this;
+					
+					// Here we're going to snap to the grid
+					// get the [0;0] position of the element
+					var origin 	= this.element.offset();
+					
+					var fixedX	= offset.left-origin.left+(this.props.cell.pxwidth/2);
+					var fixedY	= offset.top-origin.top+(this.props.cell.pxheight/2);
+					
+					// Pos is in cells, not pixels!
+					var pos =  {
+						x:		Math.max(0,Math.floor(fixedX/(this.props.cell.pxwidth+this.props.margin.pxwidth))),
+						y:		Math.max(0,Math.floor(fixedY/(this.props.cell.pxheight+this.props.margin.pxheight)))
+					}
+					var pospx	= this.fromGrid(pos);
+					
+					// debug
+					this.debug("colx", pos.x);
+					this.debug("coly", pos.y);
+					this.debug("posx", offset.left);
+					this.debug("posy", offset.top);
+					this.debug("snapx", pospx.left);
+					this.debug("snapy", pospx.top);
+					
+					this.helper.shadow.addClass("visible").css($.extend({
+						width:	(this.props.cell.pxwidth*widget.width.start)+((widget.width.start-1)*this.props.margin.pxwidth),
+						height:	(this.props.cell.pxheight*widget.height.start)+((widget.height.start-1)*this.props.margin.pxheight)
+					},pospx));
+					
+					
+				} catch (err) {
+					this.error(err);
+				}
+			};
+			
+			pluginClass.prototype.fromGrid = function (pos) {
+				try {
+					
+					// Convert grid coordinates to pixel coordinates
+					return {
+						left:	pos.x*(this.props.cell.pxwidth+this.props.margin.pxwidth),
+						top:	pos.y*(this.props.cell.pxheight+this.props.margin.pxheight)
+					};
 					
 				} catch (err) {
 					this.error(err);

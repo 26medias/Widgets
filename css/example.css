@@ -213,3 +213,14 @@ body,html {
 		}
 	}
 }
+
+table.debug {
+	width:			100%;
+	td {
+		font-size:		11px;
+	}
+	td:first-child {
+		font-weight: 	bold;
+		width:			50px;
+	}
+}
